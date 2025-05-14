@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "5.x",
+    "@ant-design/nextjs-registry": "^1.0.2",
     "antd": "^5.25.1",
     "next": "15.3.2",
     "react": "^19.0.0",
@@ -22,7 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "less": "^4.3.0",
+    "sass": "^1.88.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,9 +1,5 @@
-import { Button } from "antd";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div>
-      <Button>s</Button>
-    </div>
-  );
+  redirect("/admin");
 }

@@ -1,0 +1,15 @@
+.content_wrapper {
+  position: relative;
+  background: white;
+  height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 4%);
+  border-radius: 4px;
+}
+
+.content {
+  max-height: calc(100vh - 120px);
+  margin: 16px 0 16px 16px;
+  overflow: auto;
+}
