@@ -6,7 +6,9 @@ export default function DashboardPage() {
     <div className={styles.modulebox}>
       {/* top banner */}
       <div className={styles.topBanner}>
-        <div className={styles.bannerTitle}>Welcome to Cheng's project</div>
+        <div className={styles.bannerTitle}>
+          Welcome to Cheng&apos;'s project
+        </div>
       </div>
 
       {/* DrawerList */}

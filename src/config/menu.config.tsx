@@ -1,11 +1,8 @@
 import type { ReactNode } from "react";
-import type { MenuProps } from "antd";
 import {
   FundProjectionScreenOutlined,
   AreaChartOutlined,
   MergeCellsOutlined,
-  PieChartOutlined,
-  LineChartOutlined,
 } from "@ant-design/icons";
 
 // 为菜单项定义类型

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styles from "./Header.module.scss";
 import { usePathname } from "next/navigation";
 export default function Header() {
@@ -11,10 +11,10 @@ export default function Header() {
     formatTitle();
   }, [pathname]);
 
-  const formatTitle = () => {
+  const formatTitle = useCallback(() => {
     const str = pathname.split("/").slice(-1)[0];
     setTitle(str);
-  };
+  }, []);
 
   return (
     <div style={{ background: "white" }} className={styles.header_wrapper}>
