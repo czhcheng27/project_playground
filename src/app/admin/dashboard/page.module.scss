@@ -1,0 +1,29 @@
+.modulebox {
+  position: relative;
+  background-color: #f0f2f5;
+}
+
+.topBanner {
+  background-image: url(../../../assets/dashboard/banner.png);
+  background-size: cover;
+  height: 160px;
+  margin-bottom: 8px;
+  width: 100%;
+
+  .bannerTitle {
+    text-align: center;
+    line-height: 160px;
+    font-family: fangsong;
+    font-weight: 600;
+    font-size: 24px;
+    color: #0052d9;
+  }
+}
+
+.drawerListArea {
+  height: 262px;
+  box-shadow: 0 6px 12px 0 rgba(69, 89, 120, 0.04);
+  padding: 24px 24px 24px 30px;
+  margin-bottom: 8px;
+  background-color: #fff;
+}

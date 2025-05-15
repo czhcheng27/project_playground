@@ -1,0 +1,51 @@
+name: CI for Multi-Env Next.js
+
+on:
+  push:
+    branches:
+      - dev
+      - sit
+      - uat
+      - master
+  pull_request:
+    branches:
+      - dev
+      - sit
+      - uat
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint code
+        run: yarn lint
+
+      # - name: Run tests
+      #   run: npm run test -- --ci --coverage
+
+      - name: Build project based on branch
+        run: |
+          echo "Running build for branch: $GITHUB_REF"
+          if [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+            yarn build:dev
+          elif [[ "$GITHUB_REF" == "refs/heads/sit" ]]; then
+            yarn build:sit
+          elif [[ "$GITHUB_REF" == "refs/heads/uat" ]]; then
+            yarn build:uat
+          elif [[ "$GITHUB_REF" == "refs/heads/master" ]]; then
+            yarn build:prod
+          else
+            echo "This branch is not configured for build"
