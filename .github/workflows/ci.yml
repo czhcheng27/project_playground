@@ -49,3 +49,4 @@ jobs:
             yarn build:prod
           else
             echo "This branch is not configured for build"
+          fi
