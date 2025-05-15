@@ -7,14 +7,14 @@ export default function Header() {
 
   const [title, setTitle] = useState<string>("dashboard");
 
-  useEffect(() => {
-    formatTitle();
-  }, [pathname]);
-
   const formatTitle = useCallback(() => {
     const str = pathname.split("/").slice(-1)[0];
     setTitle(str);
-  }, []);
+  }, [pathname]);
+
+  useEffect(() => {
+    formatTitle();
+  }, [formatTitle]);
 
   return (
     <div style={{ background: "white" }} className={styles.header_wrapper}>

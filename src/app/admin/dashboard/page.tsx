@@ -7,7 +7,7 @@ export default function DashboardPage() {
       {/* top banner */}
       <div className={styles.topBanner}>
         <div className={styles.bannerTitle}>
-          Welcome to Cheng&apos;'s project
+          Welcome to Cheng&apos;s project
         </div>
       </div>
 
