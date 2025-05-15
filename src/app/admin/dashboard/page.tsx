@@ -1,3 +1,4 @@
+"use client";
 import DrawerList from "./components/DrawerList";
 import styles from "./page.module.scss";
 
