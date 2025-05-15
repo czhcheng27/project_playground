@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:dev": "env-cmd -f .env.dev next build",
-    "build:sit": "env-cmd -f .env.sit next build",
-    "build:uat": "env-cmd -f .env.uat next build",
-    "build:prod": "env-cmd -f .env.prod next build"
+    "build:dev": "next build",
+    "build:sit": "next build",
+    "build:uat": "next build",
+    "build:prod": "next build"
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
@@ -24,9 +24,8 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "env-cmd": "^10.1.0",
+    "@types/react": "18.2",
+    "@types/react-dom": "18.2",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "sass": "^1.88.0",
