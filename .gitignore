@@ -42,3 +42,8 @@ next-env.d.ts
 
 # 环境变量文件
 .env*
+
+!.env.dev
+!.env.sit
+!.env.uat
+!.env.prod
