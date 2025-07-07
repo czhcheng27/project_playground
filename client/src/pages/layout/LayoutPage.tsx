@@ -24,10 +24,8 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { permissions } = useAuthStore();
-  // const { logout } = useUserStore();
+  const { logout } = useUserStore();
   const menuConfig = filterMenuByPermissions(getMenuConfig(t), permissions);
-
-  console.log(`menuConfig`, menuConfig);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -42,7 +40,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const logoutFunc = async () => {
-    // logout();
+    logout();
     navigate("/login");
   };
 
