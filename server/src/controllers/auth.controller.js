@@ -9,9 +9,11 @@ export const login = async (req, res) => {
   const { identifier, password } = req.body;
 
   try {
-    const user = await User.findOne({
-      $or: [{ username: identifier }, { email: identifier }],
-    });
+    // const user = await User.findOne({
+    //   $or: [{ username: identifier }, { email: identifier }],
+    // });
+
+    const user = await User.findOne({ email: identifier });
 
     if (!user) return sendError(res, "User not found", 401);
 

@@ -48,7 +48,7 @@ async function initApp() {
     // 4. 创建或更新 Admin 用户
     const adminUsername = "admin";
     const adminPassword = "admin"; // 初始密码
-    const adminEmail = "admin@email.com";
+    const adminEmail = "admin";
 
     let adminUser: any = await User.findOne({ username: adminUsername });
     const hashed = await hashPassword(adminPassword);
