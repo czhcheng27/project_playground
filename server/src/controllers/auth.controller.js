@@ -38,6 +38,7 @@ export const login = async (req, res) => {
           email: user.email,
           username: user.username,
           roles: user.roles,
+          permissions: user.permissions,
         },
       },
       "Login successful",
@@ -47,4 +48,14 @@ export const login = async (req, res) => {
     console.error("Login Error:", err);
     return sendError(res, "Server error", 500);
   }
+};
+
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  return sendSuccess(res, null, "Logout successful");
 };
