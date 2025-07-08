@@ -96,12 +96,12 @@ const zh = {
   },
   page: {
     userManagement: {
-      loginName: "登录名",
       username: "用户名",
       status: "状态",
       role: "角色",
-      acquirer: "收单机构",
-      lastLoginTime: "上次登陆时间",
+      createdAt: "创建时间",
+      updatedAt: "更新时间",
+      email: "邮箱",
     },
   },
 };

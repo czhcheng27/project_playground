@@ -95,12 +95,12 @@ const en = {
   },
   page: {
     userManagement: {
-      loginName: "Login Name",
-      username: "User Name",
+      username: "Username",
       status: "Status",
       role: "Role",
-      acquirer: "Acquirer",
-      lastLoginTime: "Last Login Time",
+      createdAt: "Created Time",
+      updatedAt: "Update Time",
+      email: "Email",
     },
   },
 };
