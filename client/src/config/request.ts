@@ -26,6 +26,7 @@ type AjaxResponse<T = any> = {
   code: number;
   data: T;
   message: string;
+  success: boolean;
 };
 
 type IAxiosInstance = Omit<AxiosInstance, "get" | "post"> & {

@@ -1,14 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Permission } from "@/types";
-import { mockReturnData } from "@/mock";
 
 interface AuthState {
   token: string;
   expired: number;
   permissions: Permission[];
+
   setAuth: (token: string, expired: number) => void;
   clearAuth: () => void;
+  setPermissions: (data: Permission[]) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -16,13 +17,18 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: "",
       expired: 0,
-      // permissions: [],
-      permissions: mockReturnData.permissions,
+      permissions: [],
       setAuth: (token, expired) => set({ token, expired }),
       clearAuth: () => set({ token: "", expired: 0 }),
+      setPermissions: (permissions: Permission[]) => set({ permissions }),
     }),
     {
       name: "auth",
+      partialize: (state) => ({
+        token: state.token,
+        expired: state.expired,
+        permissions: state.permissions,
+      }),
     }
   )
 );
