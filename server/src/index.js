@@ -1,9 +1,17 @@
 // 启动服务器并连接数据库
-import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import http from "http";
 import app from "./app.js";
 import { connectDB } from "./lib/db.js";
+
+// 获取当前文件所在的目录名
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const PORT = process.env.PORT || 5001;
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
