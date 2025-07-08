@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
 import permissionRoutes from "./routes/permission.route.js";
+import userRoutes from "./routes/user.route.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(
 // 路由注册
 app.use("/api/auth", authRoutes);
 app.use("/api/permission", permissionRoutes);
+app.use("/api/users", userRoutes);
 
 // 其他后续路由，如 /api/users、/api/ai 等都可以在这里继续添加
 
