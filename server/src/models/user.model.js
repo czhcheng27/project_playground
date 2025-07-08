@@ -7,7 +7,12 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     roles: [String],
-    permissions: [String],
+    permissions: [
+      {
+        route: { type: String, required: true },
+        action: { type: [String], enum: ["read", "write"], default: [] },
+      },
+    ],
   },
   { timestamps: true }
 );
