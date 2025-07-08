@@ -135,7 +135,7 @@ instance.interceptors.response.use((response: AxiosResponse) => {
   }
 
   // 后端业务状态码判断
-  if (data.code !== 200) {
+  if (data.code !== 200 && data.code !== 201) {
     if (data.code === 55001 || data.code === 55002) {
       clearToken();
       window.location.href = "/login";
