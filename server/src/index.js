@@ -13,8 +13,8 @@ async function startServer() {
     await connectDB();
     console.log("✅ MongoDB connected");
 
-    // 先执行初始化脚本
-    await import("./seeds/initAdmin.js");
+    // // 先执行初始化脚本
+    // await import("./seeds/initAdmin.js");
 
     const server = http.createServer(app);
     server.listen(PORT, () => {
