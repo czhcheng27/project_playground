@@ -3,6 +3,7 @@ dotenv.config();
 import mongoose from "mongoose";
 import axios from "axios";
 import { User } from "../server/src/models/user.model.js"; // 确保路径正确
+import { Role } from "../server/src/models/role.model.js";
 import { Permission } from "../server/src/models/permission.model.js"; // 确保路径正确
 import { hashPassword } from "../server/src/lib/hash.js"; // 确保路径正确
 import { routeConfig } from "../client/src/config/route.config"; // 确保路径正确
@@ -45,7 +46,62 @@ async function initApp() {
       );
     }
 
-    // 4. 创建或更新 Admin 用户
+    // 4. 创建或更新 Admin 角色并赋予所有权限
+    const adminRoleName = "admin"; // 使用小写 'admin' 与用户角色保持一致
+    let adminRole = await Role.findOne({ roleName: adminRoleName });
+
+    if (!adminRole) {
+      console.log(`ℹ️ Creating '${adminRoleName}' role...`);
+      adminRole = new Role({
+        roleName: adminRoleName,
+        description: "系统最高管理员角色，拥有所有应用路由的读写权限。",
+        permissions: allPermissions, // 将所有权限赋予 Admin 角色
+      });
+      await adminRole.save();
+      console.log(`✅ '${adminRoleName}' role created successfully.`);
+    } else {
+      console.log(
+        `ℹ️ '${adminRoleName}' role already exists. Checking for permission updates...`
+      );
+      // 简单更新逻辑：确保 Admin 角色拥有所有当前权限
+      // 遍历所有权限，如果角色中没有，就添加
+      let needsUpdate = false;
+      const currentRolePermissionsMap = new Map(
+        adminRole.permissions.map(
+          (p) => [p.route, p.actions] as [string, string[]]
+        )
+      );
+
+      for (const newPerm of allPermissions) {
+        const existingAction = currentRolePermissionsMap.get(newPerm.route);
+        // 如果路由不存在，或者存在的 actions 不完全匹配 (例如，不是 read/write)
+        if (
+          !existingAction ||
+          existingAction.length !== newPerm.actions.length ||
+          !existingAction.every((actions) => newPerm.actions.includes(actions))
+        ) {
+          // 找到并更新，或者添加新权限
+          const index = adminRole.permissions.findIndex(
+            (p) => p.route === newPerm.route
+          );
+          if (index > -1) {
+            adminRole.permissions[index].actions = newPerm.actions; // 更新 actions
+          } else {
+            adminRole.permissions.push(newPerm); // 添加新路由权限
+          }
+          needsUpdate = true;
+        }
+      }
+
+      if (needsUpdate) {
+        await adminRole.save();
+        console.log(`✅ '${adminRoleName}' role permissions updated.`);
+      } else {
+        console.log(`ℹ️ '${adminRoleName}' role permissions are up to date.`);
+      }
+    }
+
+    // 5. 创建或更新 Admin 用户
     const adminUsername = "admin";
     const adminPassword = "admin"; // 初始密码
     const adminEmail = "admin";
