@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     permissions: [
       {
         route: { type: String, required: true },
-        action: { type: [String], enum: ["read", "write"], default: [] },
+        actions: { type: [String], enum: ["read", "write"], default: [] },
       },
     ],
   },
