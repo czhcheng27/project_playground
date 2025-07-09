@@ -107,8 +107,7 @@ export const getRoles = async (req, res) => {
     // 2. 查询当前页的角色数据
     const roles = await Role.find({})
       .skip(skip) // 跳过前面页面已有的数据
-      .limit(pageSize) // 限制返回的数据量为每页大小
-      .lean(); // 使用 .lean() 获取纯粹的 JS 对象，提升性能
+      .limit(pageSize); // 限制返回的数据量为每页大小
 
     // 3. 计算总页数
     const totalPages = Math.ceil(totalRoles / pageSize);

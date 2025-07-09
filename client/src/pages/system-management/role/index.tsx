@@ -8,6 +8,7 @@ import { openInfoModal } from "@/components/base/InfoModal";
 import { apiDeleteUser } from "@/api/user";
 import { formatDateTime } from "@/utils/date";
 import { apiGetRoleList } from "@/api/role";
+import UpsertRole from "./UpsertRole";
 // import UpsertUserForm from "./UpsertUserForm";
 
 interface DataType {
@@ -53,18 +54,10 @@ const RolePage = () => {
           <Button
             type="link"
             onClick={() => {
-              // modal.open(
-              //   <UpsertUserForm
-              //     dictData={dictData}
-              //     initFormData={value}
-              //     type="edit"
-              //   />,
-              //   {
-              //     title: "text.editUser",
-              //     width: 600,
-              //     okCallback,
-              //   }
-              // );
+              drawer.open(<UpsertRole initData={value} type="edit" />, {
+                title: "text.editRole",
+                width: "80%",
+              });
             }}
           >
             {t("button.edit")}
@@ -93,7 +86,7 @@ const RolePage = () => {
 
   const { containerRef, scrollY } = useTableScrollHeight();
 
-  const { modal } = useOverlay();
+  const { drawer } = useOverlay();
 
   useEffect(() => {
     getRoleList(curPage, pageSize);
@@ -117,12 +110,11 @@ const RolePage = () => {
     setPageSize(pageSize);
   };
 
-  const handleAddUser = () => {
-    // modal.open(<UpsertUserForm dictData={dictData} />, {
-    //   title: "text.addUser",
-    //   width: 600,
-    //   okCallback,
-    // });
+  const handleAddRole = () => {
+    drawer.open(<UpsertRole />, {
+      title: "text.addRole",
+      width: "80%",
+    });
   };
 
   const okCallback = () => {
@@ -146,8 +138,8 @@ const RolePage = () => {
   return (
     <>
       <div className="flex justify-end items-center mb-4">
-        <Button type="primary" onClick={handleAddUser}>
-          {t("text.addUser")}
+        <Button type="primary" onClick={handleAddRole}>
+          {t("text.addRole")}
         </Button>
       </div>
 

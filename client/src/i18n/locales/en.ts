@@ -89,6 +89,8 @@ const en = {
   text: {
     addUser: "Add User",
     editUser: "Edit User",
+    addRole: "Add Role",
+    editRole: "Edit Role",
     operation: "Operation",
     password: "Password",
     confirmPsw: "Confirm Password",

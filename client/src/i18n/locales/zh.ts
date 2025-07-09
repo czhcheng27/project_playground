@@ -90,6 +90,8 @@ const zh = {
   text: {
     addUser: "新增用户",
     editUser: "编辑用户",
+    addRole: "新增角色",
+    editRole: "编辑角色",
     operation: "操作",
     password: "密码",
     confirmPsw: "确认密码",
