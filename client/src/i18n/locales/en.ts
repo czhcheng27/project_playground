@@ -102,6 +102,12 @@ const en = {
       updatedAt: "Update Time",
       email: "Email",
     },
+    roleManagement: {
+      roleName: "Role",
+      description: "Description",
+      createdAt: "Created Time",
+      updatedAt: "Update Time",
+    },
   },
 };
 export default en;

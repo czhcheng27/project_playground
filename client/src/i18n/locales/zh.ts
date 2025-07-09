@@ -103,6 +103,12 @@ const zh = {
       updatedAt: "更新时间",
       email: "邮箱",
     },
+    roleManagement: {
+      roleName: "角色",
+      description: "描述",
+      createdAt: "创建时间",
+      updatedAt: "更新时间",
+    },
   },
 };
 export default zh;
