@@ -30,6 +30,7 @@ const zh = {
     errorText: "请求超时",
     lockText: "锁定请求",
     cancelText: "取消请求",
+    networkErr: "网络通信错误",
   },
   button: {
     confirm: "确定",
@@ -106,10 +107,19 @@ const zh = {
       email: "邮箱",
     },
     roleManagement: {
-      roleName: "角色",
+      roleName: "角色名称",
       description: "描述",
       createdAt: "创建时间",
       updatedAt: "更新时间",
+      rolePlaceholder: "请输入角色名称",
+      descriptionPlaceholder: "请输入角色描述",
+      permissionConfig: "权限配置",
+      selectAllRoutes: "选中全部路由",
+      deselectAllRoutes: "取消全部路由",
+      allRoutesReadOnly: "所有已选路由设为“只读”",
+      allRoutesWrite: "所有已选路由设为“读写”",
+      readOnly: "只读",
+      readWrite: "读写",
     },
   },
 };

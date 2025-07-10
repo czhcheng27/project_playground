@@ -5,11 +5,9 @@ import type { TableColumnsType, PaginationProps } from "antd";
 import { useOverlay } from "@/components/overlay/OverlayProvider";
 import { useTableScrollHeight } from "@/hooks/useTableScrollHeight";
 import { openInfoModal } from "@/components/base/InfoModal";
-import { apiDeleteUser } from "@/api/user";
 import { formatDateTime } from "@/utils/date";
-import { apiGetRoleList } from "@/api/role";
+import { apiDeleteRole, apiGetRoleList } from "@/api/role";
 import UpsertRole from "./UpsertRole";
-// import UpsertUserForm from "./UpsertUserForm";
 
 interface DataType {
   id: string;
@@ -51,29 +49,34 @@ const RolePage = () => {
       width: 200,
       render: (value) => (
         <>
-          <Button
-            type="link"
-            onClick={() => {
-              drawer.open(<UpsertRole initData={value} type="edit" />, {
-                title: "text.editRole",
-                width: "80%",
-              });
-            }}
-          >
-            {t("button.edit")}
-          </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => {
-              openInfoModal({
-                i18n: true,
-                onOk: async () => await deleteUser(value.id),
-              });
-            }}
-          >
-            {t("button.delete")}
-          </Button>
+          {value.roleName === "admin" ? null : (
+            <>
+              <Button
+                type="link"
+                onClick={() => {
+                  drawer.open(<UpsertRole initData={value} type="edit" />, {
+                    title: "text.editRole",
+                    width: 650,
+                    okCallback,
+                  });
+                }}
+              >
+                {t("button.edit")}
+              </Button>
+              <Button
+                type="link"
+                danger
+                onClick={() => {
+                  openInfoModal({
+                    i18n: true,
+                    onOk: async () => await deleteRole(value.id),
+                  });
+                }}
+              >
+                {t("button.delete")}
+              </Button>
+            </>
+          )}
         </>
       ),
     },
@@ -113,7 +116,8 @@ const RolePage = () => {
   const handleAddRole = () => {
     drawer.open(<UpsertRole />, {
       title: "text.addRole",
-      width: "80%",
+      width: 650,
+      okCallback,
     });
   };
 
@@ -121,17 +125,17 @@ const RolePage = () => {
     getRoleList(curPage, pageSize);
   };
 
-  const deleteUser = async (id: string) => {
+  const deleteRole = async (id: string) => {
     try {
-      const res: any = await apiDeleteUser(id);
+      const res: any = await apiDeleteRole(id);
       if (res.code !== 200) {
         throw new Error(t("message.del_failed"));
       }
 
       message.success("Delete Successfully");
       getRoleList(curPage, pageSize);
-    } catch (_) {
-      throw new Error(t("message.del_failed"));
+    } catch (e: any) {
+      throw new Error(e.response.data.message || t("message.del_failed"));
     }
   };
 

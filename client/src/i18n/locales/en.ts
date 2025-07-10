@@ -29,6 +29,7 @@ const en = {
     errorText: "Request timeout.",
     lockText: "Lock request.",
     cancelText: "Cancel request.",
+    networkErr: "Network Error.",
   },
   button: {
     confirm: "Confirm",
@@ -105,10 +106,19 @@ const en = {
       email: "Email",
     },
     roleManagement: {
-      roleName: "Role",
+      roleName: "Role Name",
       description: "Description",
       createdAt: "Created Time",
       updatedAt: "Update Time",
+      rolePlaceholder: "Please enter role name",
+      descriptionPlaceholder: "Please enter description",
+      permissionConfig: "Permission Configuration",
+      selectAllRoutes: "Select All Routes",
+      deselectAllRoutes: "Deselect All Routes",
+      allRoutesReadOnly: "Set All Selected Routes to Read-Only",
+      allRoutesWrite: "Set All Selected Routes to Read and Write",
+      readOnly: "Read Only",
+      readWrite: "Read & Write",
     },
   },
 };

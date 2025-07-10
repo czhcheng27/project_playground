@@ -27,7 +27,6 @@ interface UpsertUserFormProps {
 const UpsertUserForm: React.FC<UpsertUserFormProps> = forwardRef(
   (props, ref) => {
     const { dictData, initFormData, type } = props;
-    console.log(`initFormData`, initFormData);
     const [form] = Form.useForm();
     const { t } = useTranslation();
 
@@ -36,8 +35,6 @@ const UpsertUserForm: React.FC<UpsertUserFormProps> = forwardRef(
         try {
           const formValues = await form.validateFields();
           const createParams = { ...formValues, password: formValues.username };
-          console.log(`createParams`, createParams);
-          // 模拟发请求
           const result = await upsertUser({
             ...createParams,
             id: type === "edit" ? initFormData.id : "",
@@ -65,8 +62,7 @@ const UpsertUserForm: React.FC<UpsertUserFormProps> = forwardRef(
         message.success("Operation Successfully");
         return { code: 200, data };
       } catch (e) {
-        console.error("apiUpsertUser-error", e);
-        throw new Error("创建用户失败，请稍后再试");
+        throw new Error(t("fetch.networkErr"));
       }
     };
 
