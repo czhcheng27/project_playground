@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 type ModalOptions = {
   title?: string;
-  width?: number;
+  width?: number | string;
   okText?: string;
   cancelText?: string;
   footer?: React.ReactNode | null;
