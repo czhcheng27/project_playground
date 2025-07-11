@@ -1,5 +1,6 @@
 // server/src/controllers/user.controller.js
 import { User } from "../models/user.model.js";
+import { Role } from "../models/role.model.js";
 import { hashPassword } from "../lib/hash.js";
 import { sendSuccess, sendError } from "../utils/response.js";
 
@@ -215,5 +216,73 @@ export const deleteUser = async (req, res) => {
       return sendError(res, "Invalid user ID format", 400);
     }
     return sendError(res, "Server error", 500);
+  }
+};
+
+/**
+ * @desc 获取当前登录用户的信息及最新权限
+ * @route GET /api/users/me
+ * @access Authenticated User (受 JWT 中间件保护)
+ */
+export const getCurrentUser = async (req, res) => {
+  try {
+    // 假设你的认证中间件已将 user._id 存储在 req.user.userId
+    const userId = req.user._id;
+
+    // 从数据库中获取用户（不包含密码）
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return sendError(res, "用户未找到", 404);
+    }
+
+    // --- 动态权限聚合（与 login 逻辑相同）---
+    const userRoleNames = user.roles;
+    const rolesWithPermissions = await Role.find({
+      roleName: { $in: userRoleNames },
+    }).select("permissions -_id"); // 只选择权限字段
+
+    const aggregatedPermissionsMap = new Map();
+    rolesWithPermissions.forEach((roleDoc) => {
+      if (roleDoc.permissions && Array.isArray(roleDoc.permissions)) {
+        roleDoc.permissions.forEach((perm) => {
+          if (perm && perm.route && Array.isArray(perm.actions)) {
+            if (aggregatedPermissionsMap.has(perm.route)) {
+              const existingActions = aggregatedPermissionsMap.get(perm.route);
+              const newActions = [
+                ...new Set([...existingActions, ...perm.actions]),
+              ];
+              aggregatedPermissionsMap.set(perm.route, newActions);
+            } else {
+              aggregatedPermissionsMap.set(perm.route, perm.actions);
+            }
+          }
+        });
+      }
+    });
+
+    const userPermissions = Array.from(aggregatedPermissionsMap).map(
+      ([route, actions]) => ({
+        route,
+        actions,
+      })
+    );
+    // --- 动态权限聚合结束 ---
+
+    return sendSuccess(
+      res,
+      {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        roles: user.roles,
+        permissions: userPermissions, // **关键：返回最新的聚合权限**
+      },
+      "当前用户信息获取成功",
+      200
+    );
+  } catch (err) {
+    console.error("获取当前用户错误:", err);
+    return sendError(res, "服务器错误", 500);
   }
 };

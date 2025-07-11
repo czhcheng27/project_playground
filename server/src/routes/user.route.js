@@ -4,6 +4,7 @@ import {
   upsertUser,
   getUserList,
   deleteUser,
+  getCurrentUser,
 } from "../controllers/user.controller.js"; // 导入新的 upsertUser 函数
 import { protect, authorize } from "../middleware/auth.middleware.js"; // 导入中间件
 
@@ -23,5 +24,7 @@ router.get(
 
 // DELETE /api/users/:id - 删除指定用户
 router.delete("/deleteUser/:id", protect, authorize(["admin"]), deleteUser); // <-- 新增：只有管理员可以删除用户
+
+router.get("/me", protect, getCurrentUser); // 添加此路由
 
 export default router;
