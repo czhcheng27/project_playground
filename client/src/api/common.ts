@@ -6,3 +6,6 @@ export const apiLogin = (params: { identifier: string; password: string }) =>
 
 // logout
 export const apiLogout = () => axios.post(`/auth/logout`);
+
+// get latest Permissions
+export const apiLatestPermissions = () => axios.get(`/users/me`);

@@ -38,8 +38,10 @@ const UserPage = () => {
     },
     {
       title: t("page.userManagement.role"),
-      dataIndex: "roleText",
       width: 150,
+      render: (value) => {
+        return value.roles.join(" & ");
+      },
     },
     {
       title: t("page.userManagement.createdAt"),
@@ -59,37 +61,41 @@ const UserPage = () => {
       width: 200,
       render: (value) => (
         <>
-          <Button
-            type="link"
-            onClick={() => {
-              modal.open(
-                <UpsertUserForm
-                  dictData={dictData}
-                  initFormData={value}
-                  type="edit"
-                />,
-                {
-                  title: "text.editUser",
-                  width: 600,
-                  okCallback,
-                }
-              );
-            }}
-          >
-            {t("button.edit")}
-          </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => {
-              openInfoModal({
-                i18n: true,
-                onOk: async () => await deleteUser(value.id),
-              });
-            }}
-          >
-            {t("button.delete")}
-          </Button>
+          {value.email === "admin" ? null : (
+            <>
+              <Button
+                type="link"
+                onClick={() => {
+                  modal.open(
+                    <UpsertUserForm
+                      dictData={dictData}
+                      initFormData={value}
+                      type="edit"
+                    />,
+                    {
+                      title: "text.editUser",
+                      width: 600,
+                      okCallback,
+                    }
+                  );
+                }}
+              >
+                {t("button.edit")}
+              </Button>
+              <Button
+                type="link"
+                danger
+                onClick={() => {
+                  openInfoModal({
+                    i18n: true,
+                    onOk: async () => await deleteUser(value.id),
+                  });
+                }}
+              >
+                {t("button.delete")}
+              </Button>
+            </>
+          )}
         </>
       ),
     },
