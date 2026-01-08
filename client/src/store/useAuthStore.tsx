@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthState>()(
       expired: 0,
       permissions: [],
       setAuth: (token, expired) => set({ token, expired }),
-      clearAuth: () => set({ token: "", expired: 0 }),
+      clearAuth: () => set({ token: "", expired: 0, permissions: [] }),
       setPermissions: (permissions: Permission[]) => set({ permissions }),
     }),
     {

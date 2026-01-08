@@ -16,6 +16,11 @@ import {
   isRequestLocked,
 } from "@/utils/requestControl";
 import { Notification } from "@/utils";
+import {
+  isNetworkError,
+  isAuthError,
+  getErrorType,
+} from "@/utils/networkError";
 
 type IRequestConfig = AxiosRequestConfig & {
   cancelable?: boolean;
@@ -128,10 +133,27 @@ const errorHandler = (error: AxiosError): Promise<AxiosError> => {
   removePendingRequest(config);
   removeLockingRequest(config);
 
+  const errorType = getErrorType(error);
   const { status, statusText = "" } = response as AxiosResponse;
+
+  // 认证错误 - 直接登出
+  if (errorType === "auth") {
+    clearToken();
+    window.location.href = "/login";
+    Notification(i18n.t("fetch.errorCode.401"), "error", 5);
+    return Promise.reject(error);
+  }
+
+  // 网络错误 - 不显示通知，由调用方处理
+  if (errorType === "network") {
+    // 静默处理，让调用方使用缓存
+    console.warn("网络错误:", error.message);
+    return Promise.reject({ ...error, isNetworkError: true });
+  }
+
+  // 其他错误 - 显示错误提示
   const errortext =
     getErrorText(status) || statusText || i18n.t("fetch.errorText");
-
   if (error.code !== "ERR_CANCELED") {
     Notification(errortext || error.message, "error", 5);
   }

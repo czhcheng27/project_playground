@@ -24,7 +24,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { permissions } = useAuthStore();
-  const { logout } = useUserStore();
+  const { userInfo, logout } = useUserStore();
   const menuConfig = filterMenuByPermissions(getMenuConfig(t), permissions);
 
   const {
@@ -86,7 +86,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
             }}
           />
           <div className="flex items-center gap-4">
-            <Button type="link">devtesting</Button>
+            <Button type="link">{userInfo?.username}</Button>
             <SwitchLang />
             <Button type="link" onClick={logoutFunc} style={{ width: 88 }}>
               {t("settings.logout")}
