@@ -36,6 +36,7 @@ const InfoModal = forwardRef<InfoModalRef, {}>((_, ref) => {
 
   const [visible, setVisible] = useState(false);
   const [options, setOptions] = useState<InfoModalProps>(defaultOptions);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   const isConfirm = options.type === "confirm";
 
@@ -65,17 +66,26 @@ const InfoModal = forwardRef<InfoModalRef, {}>((_, ref) => {
     <Modal
       open={visible}
       onOk={async () => {
+        if (!options.onOk) {
+          setVisible(false);
+          return;
+        }
+
         try {
-          await options.onOk?.();
+          setConfirmLoading(true);
+          await options.onOk();
           setVisible(false);
         } catch (e) {
           message.error((e as Error)?.message || "Action Failed");
+        } finally {
+          setConfirmLoading(false);
         }
       }}
       onCancel={() => setVisible(false)}
       okText={options.okText || t("button.confirm")}
       cancelButtonProps={{ style: { display: "none" } }}
       wrapClassName={wrapClassName}
+      confirmLoading={confirmLoading}
       okButtonProps={{
         danger: !isConfirm,
       }}
