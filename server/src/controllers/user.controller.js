@@ -286,3 +286,65 @@ export const getCurrentUser = async (req, res) => {
     return sendError(res, "服务器错误", 500);
   }
 };
+
+/**
+ * @desc 重置用户密码为用户名
+ * @route PUT /api/users/:id/reset-password
+ * @access Admin
+ * @param {string} id - URL 参数中的用户 ID
+ */
+export const resetPassword = async (req, res) => {
+  const userId = req.params.id; // 从 URL 参数中获取用户 ID
+
+  // 1. 基本验证：确保提供了用户 ID
+  if (!userId) {
+    return sendError(res, "User ID is required for password reset", 400);
+  }
+
+  try {
+    // 2. 查找用户
+    const user = await User.findById(userId);
+
+    // 检查用户是否存在
+    if (!user) {
+      return sendError(res, "User not found", 404);
+    }
+
+    // 3. **新增容错：不允许重置管理员用户的密码**
+    // 再次强调，出于安全考虑，通常不应该允许通过这种方式随意重置管理员密码。
+    // 如果需要重置管理员密码，应该有更严格的验证流程（例如，只有超级管理员才能操作，或者需要多因素认证）。
+    // 这里是为了防止误操作，但请根据实际安全需求调整。
+    if (user.roles.includes("admin")) {
+      return sendError(
+        res,
+        "Password reset for admin users is not allowed.",
+        403
+      );
+    }
+
+    // 4. 获取要重置的新密码（即用户的用户名）
+    const newPassword = user.username;
+
+    // 5. 对新密码进行哈希处理
+    const hashedPassword = await hashPassword(newPassword);
+
+    // 6. 更新用户密码并保存
+    user.password = hashedPassword;
+    await user.save();
+
+    // 7. 返回成功响应
+    return sendSuccess(
+      res,
+      null, // 通常重置密码不需要返回用户数据
+      `User ${user.username}'s password has been reset to their username successfully`,
+      200
+    );
+  } catch (err) {
+    console.error("Reset User Password Error:", err);
+    // 捕获无效 ID 格式的错误 (例如，ObjectId 格式不正确)
+    if (err.name === "CastError" && err.path === "_id") {
+      return sendError(res, "Invalid user ID format", 400);
+    }
+    return sendError(res, "Server error during password reset", 500);
+  }
+};

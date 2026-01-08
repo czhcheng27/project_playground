@@ -5,6 +5,7 @@ import {
   getUserList,
   deleteUser,
   getCurrentUser,
+  resetPassword,
 } from "../controllers/user.controller.js"; // 导入新的 upsertUser 函数
 import { protect, authorize } from "../middleware/auth.middleware.js"; // 导入中间件
 
@@ -26,5 +27,14 @@ router.get(
 router.delete("/deleteUser/:id", protect, authorize(["admin"]), deleteUser); // <-- 新增：只有管理员可以删除用户
 
 router.get("/me", protect, getCurrentUser); // 添加此路由
+
+// 重置用户密码路由
+// 只有管理员 (admin) 角色可以访问此接口
+router.put(
+  "/:id/reset-password",
+  protect, // 确保用户已登录
+  authorize(["admin"]), // 确保用户拥有 'admin' 角色
+  resetPassword
+);
 
 export default router;
