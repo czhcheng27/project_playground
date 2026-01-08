@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { JSX } from "react";
 import { useRoutes, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -28,18 +28,35 @@ const Router = () => {
 
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
 
+  // 使用 ref 防止重复请求
+  const isFetchingRef = useRef(false);
+  const lastFetchTimeRef = useRef(0);
+  const FETCH_INTERVAL = 1000; // 最小请求间隔 1 秒
+
   useEffect(() => {
     const fetchAndUpdatePermissions = async () => {
-      // 没有 token 或者权限已经从 localStorage 恢复且不为空，则直接结束加载状态
+      // 没有 token 则直接返回
       if (!token) return;
-      // 只有当有 token 时才尝试获取最新权限
 
+      // 防止重复请求：如果正在请求中，或距离上次请求时间太短，则跳过
+      const now = Date.now();
+      if (
+        isFetchingRef.current ||
+        now - lastFetchTimeRef.current < FETCH_INTERVAL
+      ) {
+        return;
+      }
+
+      // 只有当有 token 时才尝试获取最新权限
       // 第一次加载时显示加载动画，或者 token 刚设置时
-      if (permissions.length === 0 || isLoadingPermissions === true) {
+      if (permissions.length === 0) {
         setIsLoadingPermissions(true);
       }
 
       try {
+        isFetchingRef.current = true; // 标记正在请求
+        lastFetchTimeRef.current = now; // 记录请求时间
+
         // 调用后端 API 获取最新权限数据
         const res = await apiLatestPermissions();
         if (res.code === 200 && res.data && res.data.permissions) {
@@ -62,12 +79,13 @@ const Router = () => {
         navigate("/login");
       } finally {
         setIsLoadingPermissions(false); // 无论成功失败，都结束加载
+        isFetchingRef.current = false; // 请求完成，解除标记
       }
     };
 
-    // 在组件首次挂载、token 变化、或路由路径变化时执行
+    // ★★★ 关键修复：只在 token 或路由变化时执行，移除 permissions 依赖 ★★★
     fetchAndUpdatePermissions();
-  }, [token, location.pathname, permissions]);
+  }, [token, location.pathname]); // 移除了 permissions 依赖，避免循环触发
 
   const wrapRoutes = (routes: AppRoute[]): AppRoute[] => {
     return routes.map(({ path, element, meta, children, ...rest }) => {
