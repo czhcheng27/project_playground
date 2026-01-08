@@ -22,14 +22,17 @@ type IRequestConfig = AxiosRequestConfig & {
   lockable?: boolean;
 };
 
-type AjaxResponse<T = any> = {
+export type AjaxResponse<T = any> = {
   code: number;
   data: T;
   message: string;
   success: boolean;
 };
 
-type IAxiosInstance = Omit<AxiosInstance, "get" | "post"> & {
+type IAxiosInstance = Omit<
+  AxiosInstance,
+  "get" | "post" | "put" | "delete" | "patch"
+> & {
   get<T = any, R = AjaxResponse<T>>(
     url: string,
     config?: IRequestConfig
@@ -39,14 +42,28 @@ type IAxiosInstance = Omit<AxiosInstance, "get" | "post"> & {
     data?: any,
     config?: IRequestConfig
   ): Promise<R>;
+  delete<T = any, R = AjaxResponse<T>>(
+    url: string,
+    config?: IRequestConfig
+  ): Promise<R>;
+  put<T = any, R = AjaxResponse<T>>(
+    url: string,
+    data?: any,
+    config?: IRequestConfig
+  ): Promise<R>;
+  patch<T = any, R = AjaxResponse<T>>(
+    url: string,
+    data?: any,
+    config?: IRequestConfig
+  ): Promise<R>;
 };
 
-const instance: IAxiosInstance = axios.create({
+const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 1000 * 20,
   withCredentials: false,
   paramsSerializer: (params) => new URLSearchParams(params).toString(),
-});
+}) as IAxiosInstance;
 
 const getErrorText = (code?: number): string => {
   const statusCode = [

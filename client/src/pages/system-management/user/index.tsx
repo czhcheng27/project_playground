@@ -170,7 +170,7 @@ const UserPage = () => {
 
   const deleteUser = async (id: string) => {
     try {
-      const res: any = await apiDeleteUser(id);
+      const res = await apiDeleteUser(id);
       if (res.code !== 200) {
         throw new Error(t("message.del_failed"));
       }
@@ -183,8 +183,7 @@ const UserPage = () => {
   };
 
   const resetPwd = async (id: string) => {
-    console.log(`resetPwd`, id);
-    const res: any = await apiResetPwd(id);
+    const res = await apiResetPwd(id);
     if (res.code !== 200) {
       throw new Error(t("message.normal_failed"));
     }
