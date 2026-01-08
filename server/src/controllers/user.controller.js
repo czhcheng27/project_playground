@@ -137,6 +137,13 @@ export const getUserList = async (req, res) => {
   const skip = (page - 1) * pageSize;
 
   try {
+    // 设置响应头，禁止缓存动态数据
+    res.set({
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    });
+
     // 1. 获取总用户数量 (用于计算总页数)
     const totalUsers = await User.countDocuments({});
 
@@ -226,6 +233,13 @@ export const deleteUser = async (req, res) => {
  */
 export const getCurrentUser = async (req, res) => {
   try {
+    // 设置响应头，禁止缓存用户权限信息
+    res.set({
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    });
+
     // 假设你的认证中间件已将 user._id 存储在 req.user.userId
     const userId = req.user._id;
 

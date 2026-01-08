@@ -101,6 +101,13 @@ export const getRoles = async (req, res) => {
   const skip = (page - 1) * pageSize;
 
   try {
+    // 设置响应头，禁止缓存动态数据
+    res.set({
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    });
+
     // 1. 获取总角色数量 (用于计算总页数)
     const totalRoles = await Role.countDocuments({});
 
