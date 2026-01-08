@@ -5,7 +5,7 @@ import type { TableColumnsType, PaginationProps } from "antd";
 import { useOverlay } from "@/components/overlay/OverlayProvider";
 import { useTableScrollHeight } from "@/hooks/useTableScrollHeight";
 import { openInfoModal } from "@/components/base/InfoModal";
-import { apiGetUserList, apiDeleteUser } from "@/api/user";
+import { apiGetUserList, apiDeleteUser, apiResetPwd } from "@/api/user";
 import { formatDateTime } from "@/utils/date";
 import UpsertUserForm from "./UpsertUserForm";
 
@@ -58,7 +58,7 @@ const UserPage = () => {
     {
       title: t("text.operation"),
       fixed: "right",
-      width: 200,
+      width: 300,
       render: (value) => (
         <>
           {value.email === "admin" ? null : (
@@ -81,6 +81,20 @@ const UserPage = () => {
                 }}
               >
                 {t("button.edit")}
+              </Button>
+              <Button
+                type="link"
+                danger
+                onClick={() => {
+                  openInfoModal({
+                    i18n: true,
+                    title: "button.reset_pwd",
+                    message: "modal.infoModal.reset_pwd_msg",
+                    onOk: async () => await resetPwd(value.id),
+                  });
+                }}
+              >
+                {t("button.reset_pwd")}
               </Button>
               <Button
                 type="link"
@@ -166,6 +180,15 @@ const UserPage = () => {
     } catch (_) {
       throw new Error(t("message.del_failed"));
     }
+  };
+
+  const resetPwd = async (id: string) => {
+    console.log(`resetPwd`, id);
+    const res: any = await apiResetPwd(id);
+    if (res.code !== 200) {
+      throw new Error(t("message.normal_failed"));
+    }
+    message.success(t("message.reset_pwd_success"));
   };
 
   return (
