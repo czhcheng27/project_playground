@@ -37,6 +37,7 @@ const ErrorTypeObj: { [K in NonAuthErrorType]: ErrorConfig } = {
     title: "System Error",
     subTitle: "Request failed due to a system error. Please try again later.",
     btnTxt: "Retry Now",
+    allowAutoRetry: false,
   },
   unknown: {
     title: "System Error",
@@ -130,7 +131,7 @@ export const PermissionGuard = ({
         btnTxt={errObj.btnTxt}
         retry={check}
         autoRetrySeconds={canAutoRetry ? errObj.autoRetrySeconds : undefined}
-        allowAutoRetry={canAutoRetry}
+        allowAutoRetry={canAutoRetry && errObj.allowAutoRetry !== false}
         remainingAttempts={remaining} // 传递剩余次数
       />
     );
