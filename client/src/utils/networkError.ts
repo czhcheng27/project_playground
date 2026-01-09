@@ -76,9 +76,13 @@ export const isAuthError = (error: any): boolean => {
 /**
  * 获取错误类型
  */
-export const getErrorType = (
-  error: any
-): "auth" | "network" | "timeout" | "business" | "unknown" => {
+export type ErrorTypes =
+  | "auth"
+  | "network"
+  | "timeout"
+  | "business"
+  | "unknown";
+export const getErrorType = (error: any): ErrorTypes => {
   if (isAuthError(error)) return "auth";
 
   // 优先判断超时

@@ -9,9 +9,41 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { apiLatestPermissions } from "@/api/common";
 import Loading from "@/components/Loading";
-import { getErrorType } from "@/utils/networkError"; // 引入你的工具类
-import RetryPage from "@/pages/retry";
+import { getErrorType, type ErrorTypes } from "@/utils/networkError";
+import RetryPage, { type RetryPageProps } from "@/pages/retry";
 import { routes } from "./routes";
+
+const MAX_AUTO_RETRIES = 3; // 最大自动重试次数
+
+type ErrorConfig = Omit<RetryPageProps, "retry" | "status"> & {
+  autoRetrySeconds?: number;
+};
+
+type NonAuthErrorType = Exclude<ErrorTypes, "auth">;
+const ErrorTypeObj: { [K in NonAuthErrorType]: ErrorConfig } = {
+  timeout: {
+    title: "Request Timeout",
+    subTitle:
+      "The server is taking too long to respond. Please check your connection and try again.",
+    btnTxt: "Retry Now",
+  },
+  network: {
+    title: "Network Error",
+    subTitle:
+      "Unable to connect to the server. Please check your network connection and try again.",
+    btnTxt: "Retry Now",
+  },
+  business: {
+    title: "System Error",
+    subTitle: "Request failed due to a system error. Please try again later.",
+    btnTxt: "Retry Now",
+  },
+  unknown: {
+    title: "System Error",
+    subTitle: "Request failed due to a system error. Please try again later.",
+    btnTxt: "Retry Now",
+  },
+};
 
 export const PermissionGuard = ({
   children,
@@ -31,9 +63,8 @@ export const PermissionGuard = ({
   const [loading, setLoading] = useState(!isPublic);
   const [isAuthorized, setIsAuthorized] = useState(isPublic);
   // 新增：记录错误类型
-  const [errorType, setErrorType] = useState<
-    "auth" | "network" | "timeout" | "business" | "unknown" | null
-  >(null);
+  const [errorType, setErrorType] = useState<ErrorTypes | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const check = useCallback(async () => {
     if (isPublic) return;
@@ -53,6 +84,7 @@ export const PermissionGuard = ({
           location.pathname === "/";
 
         setIsAuthorized(hasAccess);
+        setRetryCount(0);
       } else {
         // 即使 code 不是 200，也可能是业务层面的无权限
         setIsAuthorized(false);
@@ -65,15 +97,22 @@ export const PermissionGuard = ({
       if (type === "auth") {
         clearAuth();
         navigate("/login");
+      } else {
+        // 如果是网络或超时错误，增加重试计数
+        setRetryCount((prev) => prev + 1);
       }
     } finally {
       setLoading(false);
     }
-  }, [isPublic, location.pathname, token, navigate, setPermissions, clearAuth]);
+  }, [isPublic, location.pathname, token]);
 
   useEffect(() => {
     check();
   }, [check]);
+
+  // 计算当前是否还允许自动重试
+  const canAutoRetry = retryCount < MAX_AUTO_RETRIES;
+  const remaining = Math.max(0, MAX_AUTO_RETRIES - retryCount);
 
   // 1. 公共页面或未登录处理
   if (!token && !isPublic) return <Navigate to="/login" replace />;
@@ -81,36 +120,18 @@ export const PermissionGuard = ({
   // 2. 加载中
   if (loading) return <Loading fullPage={false} />;
 
-  // 3. 处理超时错误 (Timeout Error UI)
-  if (errorType === "timeout") {
+  // 3. 出错处理（非认证错误）
+  if (Object.keys(ErrorTypeObj).includes(errorType || "")) {
+    const errObj = ErrorTypeObj[errorType as NonAuthErrorType];
     return (
       <RetryPage
-        title="Request Timeout"
-        subTitle="The server is taking too long to respond. Please check your connection and try again."
-        btnTxt="Retry Now"
+        title={errObj.title}
+        subTitle={errObj.subTitle}
+        btnTxt={errObj.btnTxt}
         retry={check}
-      />
-    );
-  }
-
-  // 4. 处理普通网络错误 (断网等)
-  if (errorType === "network") {
-    return (
-      <RetryPage
-        title="Network Error"
-        subTitle="Unable to connect to the server. Please check your network connection and try again."
-        retry={check}
-      />
-    );
-  }
-
-  // 5. 处理业务错误或系统崩溃
-  if (errorType === "business" || errorType === "unknown") {
-    return (
-      <RetryPage
-        title="System Error"
-        subTitle="Request failed due to a system error. Please try again later."
-        retry={check}
+        autoRetrySeconds={canAutoRetry ? errObj.autoRetrySeconds : undefined}
+        allowAutoRetry={canAutoRetry}
+        remainingAttempts={remaining} // 传递剩余次数
       />
     );
   }
