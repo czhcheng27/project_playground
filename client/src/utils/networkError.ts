@@ -1,4 +1,12 @@
+// client/src/utils/networkError.ts
 import type { AxiosError } from "axios";
+
+/**
+ * 判断是否为超时错误
+ */
+export const isTimeoutError = (error: any): boolean => {
+  return error?.isAxiosError && error.code === "ECONNABORTED";
+};
 
 /**
  * 判断是否为网络错误（非认证错误）
@@ -70,11 +78,15 @@ export const isAuthError = (error: any): boolean => {
  */
 export const getErrorType = (
   error: any
-): "auth" | "network" | "business" | "unknown" => {
+): "auth" | "network" | "timeout" | "business" | "unknown" => {
   if (isAuthError(error)) return "auth";
+
+  // 优先判断超时
+  if (isTimeoutError(error)) return "timeout";
+
+  // 再判断其他网络错误（如断网、DNS 错误等）
   if (isNetworkError(error)) return "network";
 
-  // 业务错误（后端返回的非成功状态码）
   if (error.isAxiosError && error.response) {
     return "business";
   }

@@ -1,5 +1,5 @@
 // src/router/PermissionGuard.tsx
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import {
   useLocation,
   Navigate,
@@ -7,9 +7,11 @@ import {
   matchRoutes,
 } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
-import Loading from "@/components/Loading";
 import { apiLatestPermissions } from "@/api/common";
-import { routes } from "./routes"; // 引入路由配置
+import Loading from "@/components/Loading";
+import { getErrorType } from "@/utils/networkError"; // 引入你的工具类
+import RetryPage from "@/pages/retry";
+import { routes } from "./routes";
 
 export const PermissionGuard = ({
   children,
@@ -20,38 +22,24 @@ export const PermissionGuard = ({
   const navigate = useNavigate();
   const { token, setPermissions, clearAuth } = useAuthStore();
 
-  // 1. 【核心逻辑】匹配当前路由，获取其 meta 信息
   const isPublic = useMemo(() => {
     const matches = matchRoutes(routes, location.pathname);
-    // 找到当前匹配的路由项（最后一个通常是具体的子路由）
     const currentRoute = matches?.[matches.length - 1]?.route as any;
     return currentRoute?.meta?.public === true;
   }, [location.pathname]);
 
-  // 如果是公共页面，初始 Loading 直接设为 false
   const [loading, setLoading] = useState(!isPublic);
   const [isAuthorized, setIsAuthorized] = useState(isPublic);
+  // 新增：记录错误类型
+  const [errorType, setErrorType] = useState<
+    "auth" | "network" | "timeout" | "business" | "unknown" | null
+  >(null);
 
-  // 防止 React 18 严格模式下重复请求的 ref
-  const hasFetchedRef = useRef(false);
-
-  useEffect(() => {
-    // 2. 如果是公共页面，直接跳过请求逻辑
+  const check = useCallback(async () => {
     if (isPublic) return;
 
-    check();
-    // 注意：这里的依赖项其实只需要 token，
-    // 因为 location 变化会导致整个组件通过 key 重新挂载，从而重新触发此 Effect
-  }, [token, isPublic, location.pathname]);
-
-  const check = async () => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    setLoading(true);
+    setErrorType(null); // 开始检查前重置错误
 
     try {
       const res = await apiLatestPermissions();
@@ -66,25 +54,70 @@ export const PermissionGuard = ({
 
         setIsAuthorized(hasAccess);
       } else {
+        // 即使 code 不是 200，也可能是业务层面的无权限
+        setIsAuthorized(false);
+      }
+    } catch (err: any) {
+      const type = getErrorType(err);
+      setErrorType(type);
+
+      // 如果是认证错误（401/403），清理并跳去登录
+      if (type === "auth") {
         clearAuth();
         navigate("/login");
       }
-    } catch (err) {
-      console.error("Permission check failed", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isPublic, location.pathname, token, navigate, setPermissions, clearAuth]);
 
-  // 3. 渲染逻辑
-  if (!token) return <Navigate to="/login" replace />;
+  useEffect(() => {
+    check();
+  }, [check]);
 
-  // 只要 loading 为 true，Outlet 就不会渲染，RolePage 的 useEffect 绝不会触发
-  if (loading) {
-    return <Loading />;
+  // 1. 公共页面或未登录处理
+  if (!token && !isPublic) return <Navigate to="/login" replace />;
+
+  // 2. 加载中
+  if (loading) return <Loading fullPage={false} />;
+
+  // 3. 处理超时错误 (Timeout Error UI)
+  if (errorType === "timeout") {
+    return (
+      <RetryPage
+        title="Request Timeout"
+        subTitle="The server is taking too long to respond. Please check your connection and try again."
+        btnTxt="Retry Now"
+        retry={check}
+      />
+    );
   }
 
+  // 4. 处理普通网络错误 (断网等)
+  if (errorType === "network") {
+    return (
+      <RetryPage
+        title="Network Error"
+        subTitle="Unable to connect to the server. Please check your network connection and try again."
+        retry={check}
+      />
+    );
+  }
+
+  // 5. 处理业务错误或系统崩溃
+  if (errorType === "business" || errorType === "unknown") {
+    return (
+      <RetryPage
+        title="System Error"
+        subTitle="Request failed due to a system error. Please try again later."
+        retry={check}
+      />
+    );
+  }
+
+  // 5. 校验通过，但确实没有权限
   if (!isAuthorized) return <Navigate to="/403" replace />;
 
+  // 6. 最终通过
   return <>{children}</>;
 };
