@@ -4,9 +4,10 @@ import { Button, Layout, Menu, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getMenuConfig } from "@/config/menuConfig";
-import { useUserStore } from "@/store/useUserStore";
 import SwitchLang from "@/components/SwitchLang";
+import { PermissionGuard } from "@/router/PermissionGuard";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 import { filterMenuByPermissions } from "@/utils/auth";
 import LogoImg from "@/assets/react.svg";
 
@@ -103,7 +104,11 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
             borderRadius: borderRadiusLG,
           }}
         >
-          {children || <Outlet />}
+          {children || (
+            <PermissionGuard key={location.pathname}>
+              <Outlet />
+            </PermissionGuard>
+          )}
         </Content>
       </Layout>
     </Layout>

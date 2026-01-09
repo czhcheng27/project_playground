@@ -1,3 +1,4 @@
+// src/router/routes.tsx
 import { lazy } from "react";
 import LayoutPage from "@/pages/layout/LayoutPage";
 
@@ -33,7 +34,6 @@ export const routes = [
   {
     path: "/",
     element: <LayoutPage />,
-    meta: { public: true }, // <== 根布局路由不校验权限
     children: [
       {
         path: "/dashboard",
