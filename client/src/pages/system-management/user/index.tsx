@@ -5,6 +5,7 @@ import type { TableColumnsType, PaginationProps } from "antd";
 import { useOverlay } from "@/components/overlay/OverlayProvider";
 import { useTableScrollHeight } from "@/hooks/useTableScrollHeight";
 import { openInfoModal } from "@/components/base/InfoModal";
+import { PermissionButton } from "@/components/base/PremissionButton";
 import { apiGetUserList, apiDeleteUser, apiResetPwd } from "@/api/user";
 import { formatDateTime } from "@/utils/date";
 import UpsertUserForm from "./UpsertUserForm";
@@ -63,7 +64,7 @@ const UserPage = () => {
         <>
           {value.email === "admin" ? null : (
             <>
-              <Button
+              <PermissionButton
                 type="link"
                 onClick={() => {
                   modal.open(
@@ -81,8 +82,8 @@ const UserPage = () => {
                 }}
               >
                 {t("button.edit")}
-              </Button>
-              <Button
+              </PermissionButton>
+              <PermissionButton
                 type="link"
                 danger
                 onClick={() => {
@@ -95,8 +96,8 @@ const UserPage = () => {
                 }}
               >
                 {t("button.reset_pwd")}
-              </Button>
-              <Button
+              </PermissionButton>
+              <PermissionButton
                 type="link"
                 danger
                 onClick={() => {
@@ -107,7 +108,7 @@ const UserPage = () => {
                 }}
               >
                 {t("button.delete")}
-              </Button>
+              </PermissionButton>
             </>
           )}
         </>
@@ -193,9 +194,9 @@ const UserPage = () => {
   return (
     <>
       <div className="flex justify-end items-center mb-4">
-        <Button type="primary" onClick={handleAddUser}>
+        <PermissionButton type="primary" onClick={handleAddUser}>
           {t("text.addUser")}
-        </Button>
+        </PermissionButton>
       </div>
 
       <div ref={containerRef} className="h-[calc(100%-100px)]">
