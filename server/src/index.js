@@ -21,9 +21,6 @@ async function startServer() {
     await connectDB();
     console.log("✅ MongoDB connected");
 
-    // // 先执行初始化脚本
-    // await import("./seeds/initAdmin.js");
-
     const server = http.createServer(app);
     server.listen(PORT, () => {
       console.log("✅ Server is running on PORT:", PORT);
@@ -35,5 +32,3 @@ async function startServer() {
 }
 
 startServer();
-
-// import("./seeds/initAdmin.js");
