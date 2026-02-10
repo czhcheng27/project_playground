@@ -5,9 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "init:admin": "tsx scripts/initApp.ts",
-    "postinstall": "npm run init:admin"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
