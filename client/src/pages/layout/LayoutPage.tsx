@@ -33,7 +33,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
   } = theme.useToken();
 
   const openKey = menuConfig?.find((obj) =>
-    obj.children?.find((cItem) => cItem.key === location.pathname)
+    obj.children?.find((cItem) => cItem.key === location.pathname),
   );
 
   const toggleCollapsed = () => {
@@ -102,13 +102,17 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
             overflow: "auto",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {children || (
-            <PermissionGuard key={location.pathname}>
-              <Outlet />
-            </PermissionGuard>
-          )}
+          <div className="flex-1 flex flex-col">
+            {children || (
+              <PermissionGuard key={location.pathname}>
+                <Outlet />
+              </PermissionGuard>
+            )}
+          </div>
         </Content>
       </Layout>
     </Layout>

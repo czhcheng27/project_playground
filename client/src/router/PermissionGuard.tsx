@@ -6,9 +6,9 @@ import {
   useNavigate,
   matchRoutes,
 } from "react-router-dom";
+import { Spin } from "antd";
 import { useAuthStore } from "@/store/useAuthStore";
 import { apiLatestPermissions } from "@/api/common";
-import Loading from "@/components/Loading";
 import { getErrorType, type ErrorTypes } from "@/utils/networkError";
 import RetryPage, { type RetryPageProps } from "@/pages/retry";
 import { routes } from "./routes";
@@ -119,7 +119,12 @@ export const PermissionGuard = ({
   if (!token && !isPublic) return <Navigate to="/login" replace />;
 
   // 2. 加载中
-  if (loading) return <Loading fullPage={false} />;
+  if (loading)
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <Spin />
+      </div>
+    );
 
   // 3. 出错处理（非认证错误）
   if (Object.keys(ErrorTypeObj).includes(errorType || "")) {
