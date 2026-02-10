@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 import axios from "axios";
-import { User } from "../server/src/models/user.model.js"; // 确保路径正确
-import { Role } from "../server/src/models/role.model.js";
-import { Permission } from "../server/src/models/permission.model.js"; // 确保路径正确
-import { hashPassword } from "../server/src/lib/hash.js"; // 确保路径正确
-import { routeConfig } from "../client/src/config/route.config"; // 确保路径正确
+import { User } from "../src/models/user.model.js"; // 确保路径正确
+import { Role } from "../src/models/role.model.js";
+import { Permission } from "../src/models/permission.model.js"; // 确保路径正确
+import { hashPassword } from "../src/lib/hash.js"; // 确保路径正确
+import { routeConfig } from "../src/config/route.config.js"; // 确保路径正确
 
 // ✅ 设置后端接口地址（开发时用本地地址）
 const BASE_URL = "http://localhost:5001";
