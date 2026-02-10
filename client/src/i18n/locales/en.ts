@@ -54,6 +54,7 @@ const en = {
     clear: "Clear",
     operation: "Operation",
     preview: "Preview",
+    reset_pwd: "Reset Password",
   },
   information: {
     title: "Prompt information",
@@ -79,12 +80,14 @@ const en = {
     normal_failed: "Operation Failed!",
     del_success: "Delete Successful!",
     del_failed: "Delete Failed!",
+    reset_pwd_success: "Password Reset Successful!",
   },
   modal: {
     infoModal: {
       del_title: "Delete",
       del_msg: "Are you sure to delete this data?",
       confirm_title: "Notice",
+      reset_pwd_msg: "Are you sure to reset this user's password?",
     },
   },
   text: {

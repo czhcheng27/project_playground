@@ -55,6 +55,7 @@ const zh = {
     clear: "清空",
     operation: "操作",
     preview: "预览",
+    reset_pwd: "重置密码",
   },
   information: {
     title: "提示信息",
@@ -80,12 +81,14 @@ const zh = {
     normal_failed: "操作失败!",
     del_success: "删除成功!",
     del_failed: "删除失败!",
+    reset_pwd_success: "密码重置成功!",
   },
   modal: {
     infoModal: {
       del_title: "删除",
       del_msg: "你确定要删除此数据吗?",
       confirm_title: "注意",
+      reset_pwd_msg: "你确定要重置此用户的密码吗?",
     },
   },
   text: {
