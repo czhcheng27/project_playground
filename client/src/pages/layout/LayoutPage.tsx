@@ -1,6 +1,6 @@
-import React, { useState, type ReactNode } from "react";
+import React, { Suspense, useState, type ReactNode } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu, Spin, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getMenuConfig } from "@/config/menuConfig";
@@ -107,11 +107,19 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
           }}
         >
           <div className="flex-1 flex flex-col">
-            {children || (
-              <PermissionGuard key={location.pathname}>
-                <Outlet />
-              </PermissionGuard>
-            )}
+            <Suspense
+              fallback={
+                <div className="flex-1 flex items-center justify-center">
+                  <Spin />
+                </div>
+              }
+            >
+              {children || (
+                <PermissionGuard key={location.pathname}>
+                  <Outlet />
+                </PermissionGuard>
+              )}
+            </Suspense>
           </div>
         </Content>
       </Layout>
