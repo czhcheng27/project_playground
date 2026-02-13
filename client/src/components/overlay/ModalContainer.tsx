@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import type { ReactNode } from "react";
 import { message, Modal } from "antd";
 import { useTranslation } from "react-i18next";
@@ -9,21 +9,27 @@ type ModalOptions = {
   okText?: string;
   cancelText?: string;
   footer?: React.ReactNode | null;
-  props?: object;
-  okCallback?: (val: any) => void;
+  showCancel?: boolean;
+  onOk?: () => Promise<void>;
+  okCallback?: (val?: unknown) => void;
   cancelCallback?: () => void;
 };
 
 type ConfirmResult = {
   code: number;
-  data: any;
+  data?: unknown;
 };
 
 type ContentRefType = {
   onConfirm?: () => Promise<ConfirmResult>;
 };
 
-const ModalContainer = ({ setAPI }: { setAPI: (api: any) => void }) => {
+type ModalAPI = {
+  open: (node: ReactNode, opts?: ModalOptions) => void;
+  close: () => void;
+};
+
+const ModalContainer = ({ setAPI }: { setAPI: (api: ModalAPI) => void }) => {
   const { t } = useTranslation();
   const contentRef = useRef<ContentRefType>(null);
 
@@ -32,25 +38,47 @@ const ModalContainer = ({ setAPI }: { setAPI: (api: any) => void }) => {
   const [options, setOptions] = useState<ModalOptions>({});
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const open = (node: ReactNode, opts: ModalOptions = {}) => {
+  // Wrap open/close in useCallback to stable references for useEffect
+  const open = useCallback((node: ReactNode, opts: ModalOptions = {}) => {
     setContent(node);
     setOptions(opts);
     setVisible(true);
-  };
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     setVisible(false);
-  };
+  }, []);
 
-  const onOk = async () => {
+  const handleOk = async () => {
+    // If caller provides a simple onOk handler (e.g. logout modal)
+    if (options.onOk) {
+      try {
+        setConfirmLoading(true);
+        await options.onOk();
+
+        setConfirmLoading(false);
+        setVisible(false);
+        // Delay callback slightly to allow UI to update (remove loading state) before navigation
+        setTimeout(() => {
+          options.okCallback?.(undefined);
+        }, 100);
+      } catch (e) {
+        message.error(e instanceof Error ? e.message : String(e));
+        setConfirmLoading(false);
+      }
+      return;
+    }
+
+    // Otherwise delegate to contentRef.onConfirm (form-based modals)
     if (!contentRef.current?.onConfirm) return;
 
     try {
       setConfirmLoading(true);
-      const { code, data } = await contentRef.current.onConfirm();
-      if (code === 200) {
+      const result = await contentRef.current.onConfirm();
+      // Ensure result exists before accessing
+      if (result && result.code === 200) {
         setVisible(false);
-        options?.okCallback?.(data);
+        options?.okCallback?.(result.data);
       }
     } catch (e) {
       message.error(e instanceof Error ? e.message : String(e));
@@ -61,10 +89,19 @@ const ModalContainer = ({ setAPI }: { setAPI: (api: any) => void }) => {
 
   useEffect(() => {
     setAPI({ open, close });
-  }, []);
+  }, [setAPI, open, close]);
 
   const translateIfString = (val?: string) =>
     typeof val === "string" ? t(val) : val;
+
+  // Determine cancel button visibility
+  const cancelButtonProps =
+    options.showCancel === false
+      ? { style: { display: "none" as const } }
+      : undefined;
+
+  // Determine footer
+  const footerProp = options.footer === null ? null : undefined;
 
   return (
     <Modal
@@ -74,16 +111,19 @@ const ModalContainer = ({ setAPI }: { setAPI: (api: any) => void }) => {
       okText={translateIfString(options.okText) || t("button.confirm")}
       cancelText={translateIfString(options.cancelText) || t("button.cancel")}
       confirmLoading={confirmLoading}
-      onOk={onOk}
+      onOk={handleOk}
       onCancel={close}
       destroyOnHidden
-      footer={options.footer === null ? null : undefined}
+      closable={options.showCancel !== false}
+      maskClosable={options.showCancel !== false}
+      cancelButtonProps={cancelButtonProps}
+      footer={footerProp}
     >
       <div className="border-t-gray-200 border-t-1 pt-4">
         {React.isValidElement(content)
-          ? React.cloneElement(content as any, {
-              ref: contentRef,
-            })
+          ? React.cloneElement(content as React.ReactElement<{ ref: React.Ref<ContentRefType> }>, {
+            ref: contentRef,
+          })
           : content}
       </div>
     </Modal>
