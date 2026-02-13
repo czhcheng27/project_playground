@@ -24,6 +24,11 @@ const LoginPage = () => {
     if (success) navigate("/dashboard");
   };
 
+  const handleDemoLogin = async () => {
+    const success = await login({ identifier: "admin", password: "admin" });
+    if (success) navigate("/dashboard");
+  };
+
   return (
     <div className="min-h-screen w-full flex">
       {/* Left Side - Hero / Branding */}
@@ -43,23 +48,23 @@ const LoginPage = () => {
           <div className="flex items-center gap-3">
             <img src={LogoImg} alt="Logo" className="w-10 h-10" />
             <span className="text-xl font-medium tracking-wide opacity-90">
-              Admin System
+              {t("login.systemTitle")}
             </span>
           </div>
 
           <div className="mb-12">
             <h1 className="text-5xl font-bold leading-tight mb-6">
-              Manage your <br />
-              <span className="text-blue-400">Digital Workspace</span> <br />
-              with confidence.
+              {t("login.heroTitle1")} <br />
+              <span className="text-blue-400">{t("login.heroTitle2")}</span> <br />
+              {t("login.heroTitle3")}
             </h1>
             <p className="text-lg text-white/60 max-w-lg leading-relaxed">
-              Experience total control with dynamic routing, advanced role-based security, and global language support. Modern administration, simplified.
+              {t("login.heroSubtitle")}
             </p>
           </div>
 
           <div className="text-sm text-white/30">
-            © 2026 Admin System by Zihang Cheng
+            {t("login.copyright")}
           </div>
         </div>
       </div>
@@ -74,12 +79,12 @@ const LoginPage = () => {
           <div className="w-full max-w-[440px]">
             <div className="text-left mb-10">
               <h2 className="text-3xl font-bold text-slate-800 mb-3">
-                Hello,
+                {t("login.welcomeTitle")}
                 <br />
-                Welcome Back!
+                {t("login.welcomeSubtitle")}
               </h2>
               <p className="text-slate-500">
-                Please enter your credentials to continue.
+                {t("login.credentialsPrompt")}
               </p>
             </div>
 
@@ -95,25 +100,25 @@ const LoginPage = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input your Username/Email!",
+                    message: t("login.usernameRequired"),
                   },
                 ]}
               >
                 <Input
                   prefix={<UserOutlined className="text-slate-400 mx-2" />}
-                  placeholder="Username or Email"
+                  placeholder={t("login.usernamePlaceholder")}
                   className="h-12 bg-slate-50 border-slate-200 hover:border-blue-400 focus:border-blue-500 focus:bg-white rounded-xl transition-all"
                 />
               </Item>
               <Item
                 name="password"
                 rules={[
-                  { required: true, message: "Please input your Password!" },
+                  { required: true, message: t("login.passwordRequired") },
                 ]}
               >
                 <Input.Password
                   prefix={<LockOutlined className="text-slate-400 mx-2" />}
-                  placeholder="Password"
+                  placeholder={t("login.passwordPlaceholder")}
                   className="h-12 bg-slate-50 border-slate-200 hover:border-blue-400 focus:border-blue-500 focus:bg-white rounded-xl transition-all"
                 />
               </Item>
@@ -122,11 +127,11 @@ const LoginPage = () => {
                 <Form.Item name="remember" valuePropName="checked" noStyle>
                   <label className="flex items-center gap-2 cursor-pointer text-slate-500 hover:text-slate-700">
                     <input type="checkbox" className="rounded border-slate-300" />
-                    <span>Remember me</span>
+                    <span>{t("login.rememberMe")}</span>
                   </label>
                 </Form.Item>
                 <a className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">
-                  Forgot Password?
+                  {t("login.forgotPassword")}
                 </a>
               </div>
 
@@ -148,22 +153,24 @@ const LoginPage = () => {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase tracking-wider">
                   <span className="bg-white px-2 text-slate-400">
-                    Demo Access
+                    {t("login.demoAccess")}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group cursor-pointer hover:border-blue-200 hover:bg-blue-50/50 transition-colors">
+              <div
+                onClick={handleDemoLogin}
+                className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between group cursor-pointer hover:border-blue-200 hover:bg-blue-50/50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
                     A
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-slate-700">
-                      Admin Account
+                      {t("login.adminAccount")}
                     </span>
                     <span className="text-xs text-slate-500">
-                      Full access permissions
+                      {t("login.fullPermissions")}
                     </span>
                   </div>
                 </div>
