@@ -11,7 +11,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { apiLatestPermissions } from "@/api/common";
 import { getErrorType, type ErrorTypes } from "@/utils/networkError";
 import RetryPage, { type RetryPageProps } from "@/pages/retry";
-import { routes } from "./routes";
+import type { Permission } from "@/types";
+import { routes, type AppRouteObject } from "./routes";
 
 const MAX_AUTO_RETRIES = 3; // 最大自动重试次数
 
@@ -57,7 +58,7 @@ export const PermissionGuard = ({
 
   const isPublic = useMemo(() => {
     const matches = matchRoutes(routes, location.pathname);
-    const currentRoute = matches?.[matches.length - 1]?.route as any;
+    const currentRoute = matches?.[matches.length - 1]?.route as AppRouteObject;
     return currentRoute?.meta?.public === true;
   }, [location.pathname]);
 
@@ -69,6 +70,7 @@ export const PermissionGuard = ({
 
   const check = useCallback(async () => {
     if (isPublic) return;
+    if (!token) return; // If no token, don't fetch permissions, let the render logic handle redirect
 
     setLoading(true);
     setErrorType(null); // 开始检查前重置错误
@@ -79,7 +81,7 @@ export const PermissionGuard = ({
         const perms = res.data.permissions || [];
         setPermissions(perms);
 
-        const allowedRoutes = perms.map((p: any) => p.route);
+        const allowedRoutes = perms.map((p: Permission) => p.route);
         const hasAccess =
           allowedRoutes.includes(location.pathname) ||
           location.pathname === "/";
@@ -90,7 +92,7 @@ export const PermissionGuard = ({
         // 即使 code 不是 200，也可能是业务层面的无权限
         setIsAuthorized(false);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       const type = getErrorType(err);
       setErrorType(type);
 
@@ -105,7 +107,14 @@ export const PermissionGuard = ({
     } finally {
       setLoading(false);
     }
-  }, [isPublic, location.pathname, token]);
+  }, [
+    isPublic,
+    location.pathname,
+    token,
+    clearAuth,
+    navigate,
+    setPermissions,
+  ]);
 
   useEffect(() => {
     check();

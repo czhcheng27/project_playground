@@ -1,5 +1,6 @@
 // src/router/routes.tsx
 import { lazy } from "react";
+import { type RouteObject } from "react-router-dom";
 import LayoutPage from "@/pages/layout/LayoutPage";
 
 const LoginPage = lazy(() => import("@/pages/login/LoginPage"));
@@ -11,8 +12,16 @@ const ProjectsPage = lazy(() => import("@/pages/projects"));
 const UserPage = lazy(() => import("@/pages/system-management/user"));
 const RolePage = lazy(() => import("@/pages/system-management/role"));
 
+export type AppRouteObject = RouteObject & {
+  meta?: {
+    public?: boolean;
+    title?: string;
+  };
+  children?: AppRouteObject[];
+};
+
 // 示例：定义需要权限的路由结构
-export const routes = [
+export const routes: AppRouteObject[] = [
   {
     path: "/403",
     element: (
