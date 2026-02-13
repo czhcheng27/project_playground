@@ -1,8 +1,13 @@
 import React, { Suspense, useState, type ReactNode } from "react";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, Spin, theme } from "antd";
+import { Button, Layout, Menu, Spin, theme, Avatar, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 import { getMenuConfig } from "@/config/menuConfig";
 import SwitchLang from "@/components/SwitchLang";
 import { useOverlay } from "@/components/overlay/OverlayProvider";
@@ -85,23 +90,60 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
         />
       </Sider>
       <Layout>
-        <Header className="!bg-white !pl-0 !pr-4 flex items-center justify-between px-4">
+        <Header
+          className="!bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between !px-6 sticky top-0 z-10 transition-all duration-300"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={toggleCollapsed}
             style={{
               fontSize: "16px",
-              width: 64,
-              height: 64,
+              width: 48,
+              height: 48,
             }}
+            className="hover:bg-slate-100 text-slate-500"
           />
-          <div className="flex items-center gap-4">
-            <Button type="link">{userInfo?.username}</Button>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-slate-50 transition-all duration-300 cursor-default group select-none border border-transparent hover:border-slate-100">
+              <Avatar
+                size="small"
+                className="bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-sm group-hover:shadow-md transition-all duration-300"
+                icon={<UserOutlined />}
+              >
+                {userInfo?.username?.[0]?.toUpperCase()}
+              </Avatar>
+              <div className="hidden sm:flex flex-col">
+                <span className="text-sm font-semibold text-slate-700 leading-none group-hover:text-blue-600 transition-colors">
+                  {userInfo?.username}
+                </span>
+                <span className="text-[10px] text-slate-400 leading-none mt-1 uppercase tracking-wide">
+                  {userInfo?.role || "User"}
+                </span>
+              </div>
+            </div>
+
+            <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
             <SwitchLang />
-            <Button type="link" onClick={openLogoutModal} style={{ width: 88 }}>
-              {t("settings.logout")}
-            </Button>
+
+            <Tooltip title={t("settings.logout")}>
+              <Button
+                type="text"
+                shape="circle"
+                icon={<LogoutOutlined />}
+                onClick={openLogoutModal}
+                className="!text-slate-400 hover:!text-red-500 hover:!bg-red-50 transition-all duration-300"
+              />
+            </Tooltip>
           </div>
         </Header>
         <Content
