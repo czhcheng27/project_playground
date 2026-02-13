@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getMenuConfig } from "@/config/menuConfig";
 import SwitchLang from "@/components/SwitchLang";
+import { useOverlay } from "@/components/overlay/OverlayProvider";
 import { PermissionGuard } from "@/router/PermissionGuard";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -21,6 +22,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { modal } = useOverlay();
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -40,9 +42,18 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
     setCollapsed(!collapsed);
   };
 
-  const logoutFunc = async () => {
-    logout();
-    navigate("/login");
+  const openLogoutModal = () => {
+    modal.open(<div>{t("settings.logoutConfirm")}</div>, {
+      title: t("settings.logout"),
+      width: 400,
+      showCancel: false,
+      onOk: async () => {
+        await logout();
+      },
+      okCallback: () => {
+        navigate("/login");
+      },
+    });
   };
 
   return (
@@ -50,9 +61,8 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
       <Sider trigger={null} collapsible collapsed={collapsed} width={256}>
         <Link
           to="/"
-          className={`h-15 w-full flex items-center transition-all duration-300 ease-in-out ${
-            collapsed ? "justify-center" : "justify-evenly pl-2 pr-4"
-          }`}
+          className={`h-15 w-full flex items-center transition-all duration-300 ease-in-out ${collapsed ? "justify-center" : "justify-evenly pl-2 pr-4"
+            }`}
         >
           <img src={LogoImg} className="w-8 h-8" alt="logo" />
 
@@ -89,7 +99,7 @@ const LayoutPage: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center gap-4">
             <Button type="link">{userInfo?.username}</Button>
             <SwitchLang />
-            <Button type="link" onClick={logoutFunc} style={{ width: 88 }}>
+            <Button type="link" onClick={openLogoutModal} style={{ width: 88 }}>
               {t("settings.logout")}
             </Button>
           </div>

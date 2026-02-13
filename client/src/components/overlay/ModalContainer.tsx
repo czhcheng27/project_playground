@@ -115,7 +115,6 @@ const ModalContainer = ({ setAPI }: { setAPI: (api: ModalAPI) => void }) => {
       onCancel={close}
       destroyOnHidden
       closable={options.showCancel !== false}
-      maskClosable={options.showCancel !== false}
       cancelButtonProps={cancelButtonProps}
       footer={footerProp}
     >

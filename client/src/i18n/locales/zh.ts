@@ -7,6 +7,7 @@ const zh = {
   settings: {
     login: "登录",
     logout: "退出登录",
+    logoutConfirm: "确定要退出登录吗？",
   },
   fetch: {
     errorCode: {

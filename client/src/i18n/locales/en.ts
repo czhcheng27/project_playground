@@ -7,6 +7,7 @@ const en = {
   settings: {
     login: "Login",
     logout: "Logout",
+    logoutConfirm: "Are you sure you want to logout?",
   },
   fetch: {
     errorCode: {
